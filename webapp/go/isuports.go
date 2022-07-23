@@ -424,15 +424,10 @@ type PlayerScoreRow struct {
 }
 
 type PlayerAndPlayerScore struct {
-	TenantID      int64  `db:"tenant_id"`
-	ID            string `db:"id"`
-	PlayerID      string `db:"player_id"`
-	CompetitionID string `db:"competition_id"`
-	Score         int64  `db:"score"`
-	RowNum        int64  `db:"row_num"`
-	CreatedAt     int64  `db:"created_at"`
-	UpdatedAt     int64  `db:"updated_at"`
-	DisplayName   string `db:"display_name"`
+	PlayerID    string `db:"player_id"`
+	Score       int64  `db:"score"`
+	RowNum      int64  `db:"row_num"`
+	DisplayName string `db:"display_name"`
 }
 
 // 排他ロックのためのファイル名を生成する
@@ -1383,7 +1378,7 @@ func competitionRankingHandler(c echo.Context) error {
 	if err := tenantDB.SelectContext(
 		ctx,
 		&pss,
-		"SELECT * FROM player_score AS ps1 INNER JOIN ( SELECT player_id, MAX(row_num) AS row_num FROM player_score WHERE tenant_id = ? AND competition_id = ? GROUP BY player_id ) AS ps2 ON ps1.player_id = ps2.player_id AND ps1.row_num = ps2.row_num INNER JOIN player ON ps1.player_id AND player.id WHERE ps1.tenant_id = ? AND ps1.competition_id = ?",
+		"SELECT ps1.player_id as player_id, ps1.score as score, ps1.row_num as row_num, player.display_name as display_name  FROM player_score AS ps1 INNER JOIN ( SELECT player_id, MAX(row_num) AS row_num FROM player_score WHERE tenant_id = ? AND competition_id = ? GROUP BY player_id ) AS ps2 ON ps1.player_id = ps2.player_id AND ps1.row_num = ps2.row_num INNER JOIN player ON ps1.player_id AND player.id WHERE ps1.tenant_id = ? AND ps1.competition_id = ?",
 		tenant.ID,
 		competitionID,
 		tenant.ID,
