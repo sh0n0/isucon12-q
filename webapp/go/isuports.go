@@ -20,6 +20,7 @@ import (
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/gofrs/flock"
+	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -99,22 +100,29 @@ func createTenantDB(id int64) error {
 
 // システム全体で一意なIDを生成する
 func dispenseID(ctx context.Context) (string, error) {
-	var id int64
-	var ret sql.Result
-	ret, err := adminDB.ExecContext(ctx, "INSERT INTO id_generator (stub) VALUES ('a');")
+	u, err := uuid.NewRandom()
 	if err != nil {
-		if merr, ok := err.(*mysql.MySQLError); ok && merr.Number == 1213 { // deadlock
-			return "", fmt.Errorf("error INSERT INTO id_generator: %w", err)
-
-		}
-		return "", fmt.Errorf("error INSERT INTO id_generator: %w", err)
-	}
-	id, err = ret.LastInsertId()
-	if err != nil {
-		return "", fmt.Errorf("error ret.LastInsertId: %w", err)
+		return "", fmt.Errorf("error id_generate: %w", err)
 	}
 
-	return fmt.Sprintf("%x", id), nil
+	return fmt.Sprintf("%x", u), nil
+
+	// var id int64
+	// var ret sql.Result
+	// ret, err := adminDB.ExecContext(ctx, "INSERT INTO id_generator (stub) VALUES ('a');")
+	// if err != nil {
+	// 	if merr, ok := err.(*mysql.MySQLError); ok && merr.Number == 1213 { // deadlock
+	// 		return "", fmt.Errorf("error INSERT INTO id_generator: %w", err)
+
+	// 	}
+	// 	return "", fmt.Errorf("error INSERT INTO id_generator: %w", err)
+	// }
+	// id, err = ret.LastInsertId()
+	// if err != nil {
+	// 	return "", fmt.Errorf("error ret.LastInsertId: %w", err)
+	// }
+
+	// return fmt.Sprintf("%x", id), nil
 }
 
 // 全APIにCache-Control: privateを設定する
