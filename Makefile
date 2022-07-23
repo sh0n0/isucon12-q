@@ -40,14 +40,7 @@ slow:
 
 .PHONY: alp
 alp:
-	sudo cat $(NGX_LOG_FOR_ALP) | alp ltsv -r --sort=sum -m "\
-	/api/player/player/[0-9a-zA-Z]+, \
-	/api/organizer/competition/[0-9]+/ranking, \
-	/api/organizer/competition/[0-9a-zA-Z]+/finish, \
-	/api/organizer/player/[0-9a-zA-Z]+/disqualified", \
-	/api/organizer/competition/[0-9a-zA-Z]+/score, \
-	/api/player/competition/[0-9a-zA-Z]+/ranking
-	"
+	sudo cat $(NGX_LOG_FOR_ALP) | alp ltsv -r --sort=sum -m "/api/player/player/[0-9a-zA-Z]+, /api/organizer/competition/[0-9]+/ranking, /api/organizer/competition/[0-9a-zA-Z]+/finish, /api/organizer/player/[0-9a-zA-Z]+/disqualified, /api/organizer/competition/[0-9a-zA-Z]+/score, /api/player/competition/[0-9a-zA-Z]+/ranking"
 
 .PHONY: kataribe
 kataribe:
