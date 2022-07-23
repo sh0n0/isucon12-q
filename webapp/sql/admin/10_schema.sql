@@ -17,8 +17,7 @@ CREATE TABLE `tenant` (
 CREATE TABLE `id_generator` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,
   `stub` CHAR(1) NOT NULL DEFAULT '',
-  PRIMARY KEY  (`id`),
-  UNIQUE KEY `stub` (`stub`)
+  PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARACTER SET=utf8mb4;
 
 CREATE TABLE `visit_history` (
