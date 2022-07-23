@@ -1325,7 +1325,13 @@ func competitionRankingHandler(c echo.Context) error {
 	}
 	defer tenantDB.Close()
 
-	if err := authorizePlayer(ctx, tenantDB, v.playerID); err != nil {
+	tx, err := tenantDB.BeginTxx(ctx, &sql.TxOptions{ReadOnly: true})
+	if err != nil {
+		return err
+	}
+	defer tx.Commit()
+
+	if err := authorizePlayer(ctx, tx, v.playerID); err != nil {
 		return err
 	}
 
@@ -1335,7 +1341,7 @@ func competitionRankingHandler(c echo.Context) error {
 	}
 
 	// 大会の存在確認
-	competition, err := retrieveCompetition(ctx, tenantDB, competitionID)
+	competition, err := retrieveCompetition(ctx, tx, competitionID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return echo.NewHTTPError(http.StatusNotFound, "competition not found")
@@ -1368,14 +1374,8 @@ func competitionRankingHandler(c echo.Context) error {
 		}
 	}
 
-	// player_scoreを読んでいるときに更新が走ると不整合が起こるのでロックを取得する
-	fl, err := flockByTenantID(v.tenantID)
-	if err != nil {
-		return fmt.Errorf("error flockByTenantID: %w", err)
-	}
-	defer fl.Close()
 	pss := []PlayerAndPlayerScore{}
-	if err := tenantDB.SelectContext(
+	if err := tx.SelectContext(
 		ctx,
 		&pss,
 		"SELECT ps1.player_id as player_id, ps1.score as score, ps1.row_num as row_num, player.display_name as display_name FROM player_score AS ps1 INNER JOIN ( SELECT player_id, MAX(row_num) AS row_num FROM player_score WHERE tenant_id = ? AND competition_id = ? GROUP BY player_id ) AS ps2 ON ps1.player_id = ps2.player_id AND ps1.row_num = ps2.row_num INNER JOIN player ON ps1.player_id = player.id WHERE ps1.tenant_id = ? AND ps1.competition_id = ?",
