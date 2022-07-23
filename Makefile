@@ -11,6 +11,9 @@ NGX_LOG_FOR_ALP:=/tmp/access_for_alp.log
 NGX_LOG_FOR_KATARIBE:=/tmp/access_for_kataribe.log
 MYSQL_LOG:=/tmp/slow-query.log
 
+.PHONY: deploy
+deploy: restart before-profile
+
 .PHONY: restart
 restart:
 	sudo systemctl restart isuports.service
