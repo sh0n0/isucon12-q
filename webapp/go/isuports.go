@@ -1374,6 +1374,8 @@ func competitionRankingHandler(c echo.Context) error {
 		"SELECT * FROM player_score AS ps1 INNER JOIN ( SELECT player_id, MAX(row_num) AS row_num_max FROM player_score WHERE tenant_id = ? AND competition_id = ? GROUP BY player_id ) AS ps2 ON ps1.player_id = ps2.player_id AND ps1.row_num = ps2.row_num_max WHERE tenant_id = ? AND competition_id = ?",
 		tenant.ID,
 		competitionID,
+		tenant.ID,
+		competitionID,
 	); err != nil {
 		return fmt.Errorf("error Select player_score: tenantID=%d, competitionID=%s, %w", tenant.ID, competitionID, err)
 	}
