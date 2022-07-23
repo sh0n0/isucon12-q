@@ -432,7 +432,6 @@ type PlayerAndPlayerScore struct {
 	RowNum        int64  `db:"row_num"`
 	CreatedAt     int64  `db:"created_at"`
 	UpdatedAt     int64  `db:"updated_at"`
-	PID           string `db:"pid"`
 	DisplayName   string `db:"display_name"`
 }
 
@@ -1384,7 +1383,7 @@ func competitionRankingHandler(c echo.Context) error {
 	if err := tenantDB.SelectContext(
 		ctx,
 		&pss,
-		"SELECT * FROM player_score AS ps1 INNER JOIN ( SELECT player_id, MAX(row_num) AS row_num FROM player_score WHERE tenant_id = ? AND competition_id = ? GROUP BY player_id ) AS ps2 ON ps1.player_id = ps2.player_id AND ps1.row_num = ps2.row_num INNER JOIN player ON ps1.player_id AND player.player_id WHERE ps1.tenant_id = ? AND ps1.competition_id = ?",
+		"SELECT * FROM player_score AS ps1 INNER JOIN ( SELECT player_id, MAX(row_num) AS row_num FROM player_score WHERE tenant_id = ? AND competition_id = ? GROUP BY player_id ) AS ps2 ON ps1.player_id = ps2.player_id AND ps1.row_num = ps2.row_num INNER JOIN player ON ps1.player_id AND player.id WHERE ps1.tenant_id = ? AND ps1.competition_id = ?",
 		tenant.ID,
 		competitionID,
 		tenant.ID,
@@ -1396,7 +1395,7 @@ func competitionRankingHandler(c echo.Context) error {
 	for _, ps := range pss {
 		ranks = append(ranks, CompetitionRank{
 			Score:             ps.Score,
-			PlayerID:          ps.ID,
+			PlayerID:          ps.PlayerID,
 			PlayerDisplayName: ps.DisplayName,
 			RowNum:            ps.RowNum,
 		})
