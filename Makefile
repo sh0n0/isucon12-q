@@ -1,8 +1,8 @@
 export GO111MODULE=on
 DB_HOST:=127.0.0.1
 DB_PORT:=3306
-DB_USER:=isucon
-DB_PASS:=isucon
+DB_USER:=root
+DB_PASS:=root
 DB_NAME:=isuports
 
 MYSQL_CMD:=mysql -h$(DB_HOST) -P$(DB_PORT) -u$(DB_USER) -p$(DB_PASS) $(DB_NAME)
