@@ -45,10 +45,9 @@ alp:
 	/api/organizer/competition/[0-9]+/ranking, \
 	/api/organizer/competition/[0-9a-zA-Z]+/finish, \
 	/api/organizer/player/[0-9a-zA-Z]+/disqualified", \
-	/api/organizer/competition/[0-9a-zA-Z]+/score
-	/api/player/competition/[0-9a-zA-Z]+/ranking, \
-
-
+	/api/organizer/competition/[0-9a-zA-Z]+/score, \
+	/api/player/competition/[0-9a-zA-Z]+/ranking
+	"
 
 .PHONY: kataribe
 kataribe:
