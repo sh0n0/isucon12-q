@@ -1371,7 +1371,7 @@ func competitionRankingHandler(c echo.Context) error {
 	if err := tenantDB.SelectContext(
 		ctx,
 		&pss,
-		"SELECT * FROM player_score WHERE tenant_id = ? AND competition_id = ? ORDER BY row_num DESC",
+		"SELECT * FROM player_score AS ps1 JOIN ( SELECT player_id, MAX(row_num) FROM player_score WHERE tenant_id = ? AND competition_id = ? GROUP BY player_id ) AS ps2 ON ps1.player_id = ps2.player_id AND ps1.score = ps2.score",
 		tenant.ID,
 		competitionID,
 	); err != nil {
